@@ -30,7 +30,7 @@ class AllJobsServices {
     } else {
       print(response.statusCode);
     }
-    print("response in alljobsservice: $response");
+
     return AllJobsResponesModel.fromJson(response.data);
   }
 }

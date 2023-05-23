@@ -29,8 +29,9 @@ class DashBoardService {
       print('success');
     } else {
       print(response.statusCode);
+      print(response.data);
     }
-    print("response in dashboardservice: $response");
+
     return DashBoardResponesModel.fromJson(response.data);
   }
 }

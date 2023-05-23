@@ -41,16 +41,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
     print("emergency: ${bal?.emergency}");
     print("jobs: ${bal?.all_jobs}");
-    print(bal);
   }
 
   @override
   Widget build(BuildContext context) {
     dynamic baseurl1 = EnvironmentPageState.getBaseurl() as dynamic;
-    var base = print('url$baseurl1');
-
-    print("emergency: ${bal?.emergency}");
-    print("jobs: ${bal?.all_jobs}");
 
     return Scaffold(
       appBar: AppBar(

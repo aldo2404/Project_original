@@ -11,7 +11,7 @@ class ClickButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
-      child: Container(
+      child: SizedBox(
         width: 300,
         child: ElevatedButton(
           style: ButtonStyle(

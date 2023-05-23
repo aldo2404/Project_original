@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fx_project/screens/chatpage.dart';
+import 'package:fx_project/screens/chatFolder/chatpage.dart';
 import 'package:fx_project/screens/dashboardpage.dart';
 import 'package:fx_project/screens/duplicatecamerapage.dart';
 import 'package:fx_project/screens/morepage.dart';
@@ -14,7 +14,13 @@ class Persistentnavbar extends StatefulWidget {
 }
 
 class _PersistentnavbarState extends State<Persistentnavbar> {
-  late PersistentTabController _controller;
+  PersistentTabController _controller = PersistentTabController();
+  final _dashNaviKey = GlobalKey<NavigatorState>();
+  final _chatNaviKey = GlobalKey<NavigatorState>();
+  final _camNaviKey = GlobalKey<NavigatorState>();
+  final _notifiNaviKey = GlobalKey<NavigatorState>();
+  final _moreNaviKey = GlobalKey<NavigatorState>();
+  late final GlobalKey<NavigatorState>? navigatorkey;
   int selectedIndex = 0;
   @override
   void initState() {
@@ -38,33 +44,16 @@ class _PersistentnavbarState extends State<Persistentnavbar> {
           NotificationPage(),
           MorePage(),
         ],
-        items: [
-          PersistentBottomNavBarItem(
-              icon: const Icon(Icons.dashboard),
-              title: 'Dashboard',
-              activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
-              inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88)),
-          PersistentBottomNavBarItem(
-              icon: const Icon(Icons.chat),
-              title: 'Chat',
-              activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
-              inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88)),
-          PersistentBottomNavBarItem(
-              icon: const Icon(Icons.camera_alt),
-              title: 'Photo',
-              activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
-              inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88)),
-          PersistentBottomNavBarItem(
-              icon: const Icon(Icons.notifications),
-              title: 'Notification',
-              activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
-              inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88)),
-          PersistentBottomNavBarItem(
-              icon: const Icon(Icons.menu),
-              title: 'More',
-              activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
-              inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88))
-        ],
+        items: items(),
+        // onWillPop: (context) async {
+        //   if (items.navigatorkey?.currentState?.canPop() ?? false) {
+        //     items[selectedIndex].navigatorkey?.currentState?.pop();
+        //     return false;
+        //   } else {
+        //     // if current tab can't be popped then use the root navigator
+        //     return true;
+        //   }
+        // },
         confineInSafeArea: true,
         backgroundColor: Colors.white,
         handleAndroidBackButtonPress: true,
@@ -82,4 +71,51 @@ class _PersistentnavbarState extends State<Persistentnavbar> {
       ),
     );
   }
+
+  List<PersistentBottomNavBarItem> items() => [
+        PersistentBottomNavBarItem(
+          icon: const Icon(Icons.dashboard),
+          title: 'Dashboard',
+          activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
+          inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88),
+          routeAndNavigatorSettings:
+              RouteAndNavigatorSettings(navigatorKey: _dashNaviKey),
+          // onPressed: (context) {
+
+          //   //Navigator.push((BuildContext? context)=> MaterialPageRoute(builder: (_)=>DashboardPage()))
+          // },
+        ),
+        PersistentBottomNavBarItem(
+          icon: const Icon(Icons.chat),
+          title: 'Chat',
+          activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
+          inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88),
+          routeAndNavigatorSettings:
+              RouteAndNavigatorSettings(navigatorKey: _chatNaviKey),
+        ),
+        PersistentBottomNavBarItem(
+          icon: const Icon(Icons.camera_alt),
+          title: 'Photo',
+          activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
+          inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88),
+          routeAndNavigatorSettings:
+              RouteAndNavigatorSettings(navigatorKey: _camNaviKey),
+        ),
+        PersistentBottomNavBarItem(
+          icon: const Icon(Icons.notifications),
+          title: 'Notification',
+          activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
+          inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88),
+          routeAndNavigatorSettings:
+              RouteAndNavigatorSettings(navigatorKey: _notifiNaviKey),
+        ),
+        PersistentBottomNavBarItem(
+          icon: const Icon(Icons.menu),
+          title: 'More',
+          activeColorPrimary: const Color.fromARGB(255, 230, 81, 0),
+          inactiveColorPrimary: const Color.fromARGB(255, 1, 21, 88),
+          routeAndNavigatorSettings:
+              RouteAndNavigatorSettings(navigatorKey: _moreNaviKey),
+        )
+      ];
 }

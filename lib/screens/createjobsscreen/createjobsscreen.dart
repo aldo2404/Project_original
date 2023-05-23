@@ -5,6 +5,7 @@ import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:fx_project/layout/buttonfield.dart';
 import 'package:fx_project/layout/input_field.dart';
 import 'package:fx_project/layout/snackbar.dart';
+import 'package:fx_project/screens/dashboardpage.dart';
 import 'package:fx_project/screens/environmentpage.dart';
 import 'package:fx_project/services/createjodservices.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,7 +49,8 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
   String? unitTenantName;
   String? address;
   String? managerName;
-  List<String>? engineersName = [];
+  String? engineersName;
+  late String dateFormat;
   int manNameCount = 0;
   int engNameCount = 0;
 
@@ -237,10 +239,11 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                     currentStep += 1;
                   });
                 }
-              }
-
-              if (currentStep == 2) {
+              } else if (currentStep == 2) {
                 print("last Step");
+                uploadCreateJobData();
+                // Navigator.of(context).push(
+                //     MaterialPageRoute(builder: (_) => const DashboardPage()));
               }
             },
             onStepCancel: currentStep == 0
@@ -259,6 +262,15 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                       Expanded(
                         child: ClickButton(
                           onpressed: details.onStepContinue,
+                          // () {
+                          //   if (isLastStep) {
+                          //     uploadCreateJobData();
+                          //     // Navigator.of(context).push(MaterialPageRoute(
+                          //     //     builder: (_) => const DashboardPage()));
+                          //   } else {
+                          //     details.onStepContinue;
+                          //   }
+                          // },
                           child: Text(isLastStep ? 'SUBMIT' : 'NEXT'),
                         ),
                       ),
@@ -490,6 +502,11 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                         dateController.text = DateFormat("MM-dd-yyyy")
                             .format(selected!)
                             .toString();
+                        dateFormat = DateFormat('yyyy-MM-dd')
+                            .format(selected)
+                            .toString();
+                        print(dateFormat);
+                        print(dateController.text);
                       });
                     },
                     suffixs: const Icon(
@@ -577,35 +594,32 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                         crossAxisSpacing: 10,
                         shrinkWrap: true,
                         children: List.generate(imageFiles.length, (index) {
-                          return SingleChildScrollView(
-                            child: Stack(
-                              children: <Widget>[
-                                Image.file(
-                                  imageFiles[index],
-                                  fit: BoxFit.cover,
-                                  scale: 2,
-                                ),
-                                Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: InkWell(
-                                      child: const Icon(
-                                        Icons.cancel,
-                                        size: 15,
-                                        color:
-                                            Color.fromARGB(255, 196, 194, 194),
-                                      ),
-                                      onTap: () {
-                                        // var imgId = imageId[index].toString();
-                                        // print(imgId);
-                                        // deletedFile(imgId);
-                                        setState(() {
-                                          imageFiles.removeAt(index);
-                                        });
-                                      },
-                                    ))
-                              ],
-                            ),
+                          return Stack(
+                            children: <Widget>[
+                              Image.file(
+                                imageFiles[index],
+                                fit: BoxFit.cover,
+                                scale: 2,
+                              ),
+                              Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: InkWell(
+                                    child: const Icon(
+                                      Icons.cancel,
+                                      size: 15,
+                                      color: Color.fromARGB(255, 196, 194, 194),
+                                    ),
+                                    onTap: () {
+                                      // var imgId = imageId[index].toString();
+                                      // print(imgId);
+                                      // deletedFile(imgId);
+                                      setState(() {
+                                        imageFiles.removeAt(index);
+                                      });
+                                    },
+                                  ))
+                            ],
                           );
                         }),
                       )
@@ -621,7 +635,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
             title: const Text(' '),
             content: Column(
               children: [
-                const SizedBox(height: 20),
+                //const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.all(2),
                   child: Container(
@@ -632,7 +646,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                         titleText("Priority"),
                         Padding(
                           padding: const EdgeInsets.only(
-                              top: 5.0, bottom: 10.0, left: 5, right: 5),
+                              top: 5.0, bottom: 8.0, left: 5, right: 5),
                           child: ReuseTextFields(
                             hinttext: 'Select',
                             inputfieldcolor: Colors.white,
@@ -665,13 +679,16 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                 Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 15),
                     child: reviewData("Property:", propertyController.text,
-                        iconVisiable = false, () {})),
-                reviewData("Address:", address, iconVisiable = false, () {}),
-                reviewData("Location:", unitName, iconVisiable = true, () {
+                        false, () {}, const Alignment(-0.5, 0))),
+                //gridReviewData(context, "Address", address, false, () {}),
+                reviewData(
+                    "Address:", address, false, () {}, const Alignment(0, 0)),
+                reviewData("Location:", unitName, true, () {
                   locationBottomSheetModel();
-                }),
-                reviewData("Target\nCompletion Date:", dateController.text,
-                    iconVisiable = true, () async {
+                }, const Alignment(-0.17, 0)),
+                reviewData(
+                    "Target\nCompletion Date:", dateController.text, true,
+                    () async {
                   DateTime? selected = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
@@ -679,49 +696,67 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                       lastDate: DateTime(2100));
                   setState(() {
                     dateController.text =
-                        DateFormat("MM/dd/yyyy").format(selected!).toString();
+                        DateFormat("MM-dd-yyyy").format(selected!).toString();
                   });
-                }),
-                reviewData("Service Type:", serviceController.text,
-                    iconVisiable = true, () {
+                }, const Alignment(-0.16, 0)),
+                reviewData("Service Type:", serviceController.text, true, () {
                   serviceBottomSheetModel();
-                }),
-                reviewData(
-                    "Category:", categoryController.text, iconVisiable = true,
-                    () {
+                }, const Alignment(0.08, 0)),
+                reviewData("Category:", categoryController.text, true, () {
                   categoryBottomSheetModel();
-                }),
+                }, const Alignment(0.18, 0)),
                 Padding(
                   padding: const EdgeInsets.only(top: 2, bottom: 15),
-                  child: reviewData(
-                      "Tenant:", unitTenantName, iconVisiable = false, () {}),
+                  child: reviewData("Tenant:", unitTenantName, false, () {},
+                      const Alignment(-0.16, 0)),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text("Billable Party:"),
-                    Text(
-                      "Tenant",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                  children: [
+                    const Text(
+                      "Billable Party:",
+                      style: TextStyle(fontSize: 12),
                     ),
-                    SizedBox(
-                      width: 20,
-                    )
+                    Container(
+                      // color: const Color.fromARGB(31, 232, 78, 78),
+                      width: 150,
+                      child: const Align(
+                        alignment: Alignment(-0.45, 0),
+                        child: Text(
+                          "Tenant",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20)
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Assign Manager:"),
+                    const Text(
+                      "Assign Manager:",
+                      style: TextStyle(fontSize: 12),
+                    ),
                     //const SizedBox(width: 30),
                     managerName != null
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                managerName!,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w500),
+                              Align(
+                                alignment: const Alignment(-1, 0),
+                                child: Container(
+                                  // color: Colors.orangeAccent,
+                                  width: 150,
+                                  child: Text(
+                                    managerName!,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12),
+                                  ),
+                                ),
                               ),
                               IconButton(
                                   onPressed: () {
@@ -753,40 +788,57 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                           )
                   ],
                 ),
+
+                //assign engineers field .....
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Assign Engineer:"),
-                    engineersName!.isNotEmpty
+                    const Text(
+                      "Assign Engineer:",
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    engineersName != null
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              ListView.builder(
-                                  controller: ScrollController(),
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: engineersName!.length,
-                                  itemBuilder: (context, index) {
-                                    return SizedBox(
-                                      width: 150,
-                                      child: IntrinsicWidth(
-                                        child: Container(
-                                          height: 20,
-                                          //width: 70,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              border: Border.all(
-                                                  color: Colors.black26)),
-                                          child: Text(
-                                            engineersName![index],
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }),
+                              Align(
+                                alignment: const Alignment(-1, 0),
+                                child: Container(
+                                  // color: Colors.orangeAccent,
+                                  width: 150,
+                                  child: Text(
+                                    engineersName!,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12),
+                                  ),
+                                ),
+                                //  ListView.builder(
+                                //     //controller: ScrollController(),
+                                //     scrollDirection: Axis.horizontal,
+                                //     itemCount: engineersName!.length,
+                                //     itemBuilder: (context, index) {
+                                //       return IntrinsicWidth(
+                                //         child: Container(
+                                //           height: 30,
+                                //           //width: 70,
+                                //           decoration: BoxDecoration(
+                                //               borderRadius:
+                                //                   BorderRadius.circular(6),
+                                //               border: Border.all(
+                                //                   color: Colors.black26)),
+                                //           child: Text(
+                                //             engineersName![index],
+                                //             overflow: TextOverflow.ellipsis,
+                                //             style: const TextStyle(
+                                //                 fontWeight: FontWeight.w500,
+                                //                 fontSize: 12),
+                                //           ),
+                                //         ),
+                                //       );
+                                //     }),
+                              ),
                               IconButton(
                                   onPressed: () {
                                     engineerBottomSheetModel();
@@ -820,10 +872,14 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
-                    Text("Submitted by:"),
+                    Text(
+                      "Submitted by:",
+                      style: TextStyle(fontSize: 12),
+                    ),
                     Text(
                       "Navin Antony",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
                     ),
                     SizedBox(width: 20)
                   ],
@@ -833,12 +889,20 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("Date Created:"),
-                      Text(
-                        DateFormat('MM-dd-yyyy HH:mm a')
-                            .format(DateTime.now())
-                            .toString(),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      const Text("Date Created:",
+                          style: TextStyle(fontSize: 12)),
+                      Container(
+                        width: 150,
+                        child: Align(
+                          alignment: const Alignment(1.5, 0),
+                          child: Text(
+                            DateFormat('MM-dd-yyyy HH:mm a')
+                                .format(DateTime.now())
+                                .toString(),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 12),
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 20)
                     ],
@@ -847,7 +911,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Courtesy Job"),
+                    const Text("Courtesy Job", style: TextStyle(fontSize: 12)),
                     Row(
                       children: [
                         const Text("Yes"),
@@ -992,26 +1056,96 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
   titleText(String text) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: [Text(text)],
+      children: [
+        Text(
+          text,
+          style: const TextStyle(fontSize: 12),
+        )
+      ],
     );
   }
 
-  reviewData(
-      String tiText, infoText, bool iconVisiable, void Function()? onPressed) {
+  Widget gridReviewData(BuildContext context, String tiText, infoText,
+      bool iconVisiable, void Function()? onPressed) {
+    return GridView.custom(
+      padding: const EdgeInsets.all(10),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 2.8),
+      childrenDelegate: SliverChildListDelegate([
+        Container(
+          color: Colors.amberAccent,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [Text(tiText)],
+              ),
+            ],
+          ),
+        ),
+        Container(
+          color: const Color.fromARGB(255, 207, 242, 166),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(infoText),
+            ],
+          ),
+        ),
+        Container(
+          color: const Color.fromARGB(255, 251, 221, 111),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  iconVisiable
+                      ? IconButton(
+                          constraints: const BoxConstraints(),
+                          onPressed: onPressed,
+                          icon: const Icon(
+                            Icons.mode_edit_outline,
+                            size: 22,
+                          ))
+                      : const SizedBox(width: 5)
+                ],
+              ),
+            ],
+          ),
+        ),
+      ]),
+    );
+  }
+
+  reviewData(String tiText, infoText, bool iconVisiable,
+      void Function()? onPressed, AlignmentGeometry alignment) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(tiText),
         Text(
-          infoText ?? '_',
-          style: const TextStyle(fontWeight: FontWeight.w500),
+          tiText,
+          style: const TextStyle(fontSize: 12),
+        ),
+        Container(
+          width: 150,
+          //color: const Color.fromARGB(255, 244, 227, 165),
+          child: Align(
+            alignment: alignment,
+            child: Text(
+              infoText ?? '_',
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+            ),
+          ),
         ),
         iconVisiable
             ? IconButton(
                 onPressed: onPressed,
                 icon: const Icon(
                   Icons.mode_edit_outline,
-                  size: 22,
+                  size: 18,
                 ))
             : const SizedBox(
                 width: 5,
@@ -1049,7 +1183,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                 },
                 icon: const Icon(
                   Icons.mode_edit_outline,
-                  size: 22,
+                  size: 18,
                 ))
             : IconButton(
                 onPressed: () {
@@ -1059,7 +1193,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                 },
                 icon: const Icon(
                   Icons.check,
-                  size: 22,
+                  size: 18,
                   color: Color.fromARGB(255, 247, 84, 9),
                 ))
       ],
@@ -1075,7 +1209,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
             ? Text(
                 descripText,
                 style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
               )
             : ReuseTextFields(
                 width: 280,
@@ -1096,7 +1230,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                 },
                 icon: const Icon(
                   Icons.mode_edit_outline,
-                  size: 22,
+                  size: 18,
                 ))
             : IconButton(
                 onPressed: () {
@@ -1106,7 +1240,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                 },
                 icon: const Icon(
                   Icons.check,
-                  size: 22,
+                  size: 18,
                   color: Color.fromARGB(255, 247, 84, 9),
                 ))
       ],
@@ -1184,7 +1318,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
       "request_type": "In Unit",
       "property": propertyId,
       "category": categoryId,
-      "target_date": dateController.text,
+      "target_date": dateFormat,
       "description": briefDescripController.text,
       "asscess_jinstruction": accesController.text,
       "unit_entry_permission": false,
@@ -1217,7 +1351,7 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
       return Container(
           width: MediaQuery.of(context).size.width * 0.02,
           decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide()),
+            border: Border(bottom: BorderSide(color: Colors.black26)),
             color: Color.fromARGB(255, 248, 246, 246),
           ),
           child: ListTile(
@@ -1609,129 +1743,250 @@ class _CreateJobsScreenState extends State<CreateJobsScreen> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Text("Assigned($engNameCount)"),
-                              ],
-                            ),
-                            engineersName!.isNotEmpty
-                                ? ListView.builder(
-                                    itemCount: engineersName!.length,
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                          padding: const EdgeInsets.only(
-                                              top: 5, bottom: 10),
-                                          decoration: const BoxDecoration(
-                                              color: Color.fromARGB(
-                                                  255, 186, 247, 217)),
-                                          child: ListTile(
-                                            title: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 8.0),
-                                              child:
-                                                  Text(engineersName![index]),
-                                            ),
-                                            trailing: IconButton(
-                                                constraints:
-                                                    const BoxConstraints(),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    engineersName = null;
-                                                    engNameCount -= 1;
-                                                  });
-                                                },
-                                                icon: const Icon(Icons.close)),
-                                          ));
-                                    })
-                                : const SizedBox(height: 25),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "Unassigned",
-                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  checkColor: Colors.black,
-                                  side: const BorderSide(
-                                      width: 2, color: Colors.black),
-                                  value: _isChecked,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _isChecked = !_isChecked;
-                                    });
-                                  },
-                                ),
-                                const Text("No Engineer Required")
-                              ],
-                            ),
-                            // ListBody(
-                            //   children: widget.engineersData!.map((item)=>CheckboxListTile(value: engineersName!.contains(item), onChanged: (_isChecked)=>),),
-                            // ),
-                            ListView.builder(
-                              controller: scrollController,
-                              shrinkWrap: true,
-                              itemCount: engineersData!.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  behavior: HitTestBehavior.opaque,
-                                  child: Row(children: [
-                                    Checkbox(
-                                      checkColor: Colors.black,
-                                      side: const BorderSide(
-                                          width: 2, color: Colors.black),
-                                      value: isChecked,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          isChecked = !isChecked;
-                                          engineersName!.add(
-                                              engineersData![index]
-                                                  ['full_name']);
-                                        });
-                                      },
+                      Column(
+                        children: [
+                          Row(
+                            children: const [
+                              Text("Assigned"),
+                            ],
+                          ),
+                          engineersName != null
+                              ? Container(
+                                  padding:
+                                      const EdgeInsets.only(top: 5, bottom: 10),
+                                  decoration: const BoxDecoration(
+                                      color:
+                                          Color.fromARGB(255, 186, 247, 217)),
+                                  child: ListTile(
+                                    title: Row(
+                                      children: [
+                                        const CircleAvatar(
+                                          backgroundColor: Color.fromARGB(
+                                              255, 224, 224, 224),
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.black12,
+                                            size: 30,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            engineersName!,
+                                            style: const TextStyle(
+                                                //fontWeight: FontWeight.bold,
+                                                fontSize: 12),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    Text(
-                                      engineersData![index]['full_name']
-                                          .toString(),
-                                      style: const TextStyle(
-                                          //fontWeight: FontWeight.bold,
-                                          fontSize: 12),
+                                  ),
+                                  // Row(
+                                  //   mainAxisAlignment:
+                                  //       MainAxisAlignment.spaceBetween,
+                                  //   children: [
+                                  //     Padding(
+                                  //       padding: const EdgeInsets.only(
+                                  //           left: 8.0),
+                                  //       child: Text(engineersName!),
+                                  //     ),
+                                  //     IconButton(
+                                  //         constraints:
+                                  //             const BoxConstraints(),
+                                  //         onPressed: () {
+                                  //           setState(() {
+                                  //             managerName = null;
+                                  //             manNameCount -= 1;
+                                  //           });
+                                  //         },
+                                  //         icon: const Icon(Icons.close))
+                                  //   ],
+                                  // ),
+                                )
+                              // ListView.builder(
+                              //     itemCount: engineersName!.length,
+                              //     itemBuilder: (context, index) {
+                              //       return Container(
+                              //           padding: const EdgeInsets.only(
+                              //               top: 5, bottom: 10),
+                              //           decoration: const BoxDecoration(
+                              //               color: Color.fromARGB(
+                              //                   255, 186, 247, 217)),
+                              //           child: ListTile(
+                              //             title: Padding(
+                              //               padding: const EdgeInsets.only(
+                              //                   left: 8.0),
+                              //               child: Text(engineersName![index]),
+                              //             ),
+                              //             trailing: IconButton(
+                              //                 constraints:
+                              //                     const BoxConstraints(),
+                              //                 onPressed: () {
+                              //                   setState(() {
+                              //                     engineersName = null;
+                              //                     engNameCount -= 1;
+                              //                   });
+                              //                 },
+                              //                 icon: const Icon(Icons.close)),
+                              //           ));
+                              //     })
+                              : const SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const [
+                              Text(
+                                "Unassigned",
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                          // Row(
+                          //   children: [
+                          //     const SizedBox(width: 18),
+                          //     Checkbox(
+                          //       checkColor: Colors.black,
+                          //       side: const BorderSide(
+                          //           width: 2, color: Colors.black),
+                          //       value: _isChecked,
+                          //       onChanged: (value) {
+                          //         setState(() {
+                          //           _isChecked = !_isChecked;
+                          //         });
+                          //       },
+                          //     ),
+                          //     const Text("No Engineer Required")
+                          //   ],
+                          // ),
+                          ListView.builder(
+                            controller: scrollController,
+                            shrinkWrap: true,
+                            itemCount: engineersData!.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                onTap: () {
+                                  engineersName = engineersData![index]
+                                          ['full_name']
+                                      .toString();
+                                  engNameCount += 1;
+                                  engineersId = engineersData![index]['id'];
+                                },
+                                // leading: Checkbox(
+                                //     value: isChecked,
+                                //     onChanged: (value) {
+                                //       setState(() {
+                                //         isChecked = !isChecked;
+                                //       });
+                                //     }),
+                                title: Row(
+                                  children: [
+                                    const CircleAvatar(
+                                      backgroundColor:
+                                          Color.fromARGB(255, 224, 224, 224),
+                                      child: Icon(
+                                        Icons.person,
+                                        color: Colors.black12,
+                                        size: 30,
+                                      ),
                                     ),
-                                  ]),
-                                  onTap: () {
-                                    setState(() {
-                                      isChecked = !isChecked;
-                                      engNameCount += 1;
-                                      engineersId = engineersData![index]['id'];
-                                    });
-                                  },
-                                );
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Text(
+                                        engineersData![index]['full_name']
+                                            .toString(),
+                                        style: const TextStyle(
+                                            //fontWeight: FontWeight.bold,
+                                            fontSize: 12),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              );
+                              //engineersData!.map((nameList) => ListTile(
+                              //                 leading: Checkbox(value: engineersName!.contains(nameList), onChanged: (value) {
+                              //                   setState(() {
+                              //   if (value != null && value) {
+                              //     engineersName!.add(nameList);
+                              //   } else {
+                              //     engineersName!.remove(nameList);
+                              //   }
+                              //   // widget.onChanged(_selectedValues);
+                              // });
+                              //                 }),
+                              //               )).toList();
+                              // GestureDetector(
+                              //   behavior: HitTestBehavior.opaque,
+                              //   child: Row(children: [
+                              //     SingleChildScrollView(
+                              //       child: ListBody(
+                              //         children: engineersData!
+                              //             .map((e) => CheckboxListTile(
+                              //                 value: engineersName!.contains(e),
+                              //                 onChanged: (isChecked) {
+                              //                   _itemChange(e, isChecked!);
+                              //                 }))
+                              //             .toList(),
+                              //       ),
+                              //     ),
+                              //     // Checkbox(
+                              //     //   checkColor: Colors.black,
+                              //     //   side: const BorderSide(
+                              //     //       width: 2, color: Colors.black),
+                              //     //   value: isChecked,
+                              //     //   onChanged: (value) {
+                              //     //     setState(() {
+                              //     //       isChecked = !isChecked;
+                              //     //       engineersName!.add(
+                              //     //           engineersData![index]
+                              //     //               ['full_name']);
+                              //     //     });
+                              //     //   },
+                              //     // ),
+
+                              //     Text(
+                              //       engineersData![index]['full_name']
+                              //           .toString(),
+                              //       style: const TextStyle(
+                              //           //fontWeight: FontWeight.bold,
+                              //           fontSize: 12),
+                              //     ),
+                              //   ]),
+                              //   onTap: () {
+                              //     setState(() {
+                              //       isChecked = !isChecked;
+                              //       engNameCount += 1;
+                              //       engineersId = engineersData![index]['id'];
+                              //     });
+                              //   },
+                              // );
+                            },
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ClickButton(
+                              child: const Text("Assign"),
+                              onpressed: () {
+                                Navigator.of(context).pop();
                               },
                             ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: ClickButton(
-                                child: Text("Assign"),
-                                onpressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            )
-                          ],
-                        ),
+                          )
+                        ],
                       ),
                     ],
                   );
                 });
               });
         });
+  }
+
+  void _itemChange(String itemValue, bool isSelected) {
+    setState(() {
+      // if (isSelected) {
+      //   engineersName!.add(itemValue);
+      // } else {
+      //   engineersName!.remove(itemValue);
+      // }
+    });
   }
 
   bottomsheetmodel(String titleText, int itemCount,

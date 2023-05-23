@@ -51,7 +51,7 @@ class _AllJobsScreenPageState extends State<AllJobsScreenPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${emecount} All Jobs',
+          '$emecount All Jobs',
         ),
         //   title: Text("Posts"),
         leading: (Row(
@@ -83,7 +83,7 @@ class _AllJobsScreenPageState extends State<AllJobsScreenPage> {
           );
         } else if (state is PostSuccessState) {
           List<dynamic> posts = state.posts;
-          print('screenposts$posts');
+
           return RefreshIndicator(
             onRefresh: refresh,
             child: Column(
@@ -125,7 +125,7 @@ class _AllJobsScreenPageState extends State<AllJobsScreenPage> {
                           );
                         } else {
                           Result post = posts[index];
-                          print('eme pos${post.id}');
+
                           return cardListContainer(
                               post.property.toString(),
                               post.serviceType,

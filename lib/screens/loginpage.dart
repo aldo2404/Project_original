@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 160),
                         const Text("Welcome back!",
                             style: TextStyle(
-                                fontSize: 25,
+                                fontSize: 27,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.white)),
                         const SizedBox(height: 30),
@@ -135,6 +135,8 @@ class _LoginPageState extends State<LoginPage> {
                             child: Row(
                               children: [
                                 Checkbox(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(2)),
                                   checkColor: Colors.white,
                                   side: const BorderSide(
                                       width: 2, color: Colors.white),

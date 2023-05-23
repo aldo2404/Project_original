@@ -17,7 +17,6 @@ class LoginResponseModel {
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
     var domainList = json['domains'] as List?;
     List<DomainModel> parsedDomainList = [];
-    print("res: $domainList");
     if (domainList != null) {
       parsedDomainList =
           domainList.map((d) => DomainModel.fromJson(d)).toList();

@@ -25,7 +25,7 @@ class LoginService {
       options: options,
       data: data,
     );
-    print("response in loginservice: $response");
+
     return LoginResponseModel.fromJson(response.data);
   }
 

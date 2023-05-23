@@ -77,7 +77,7 @@ class ReuseTextFieldsState extends State<ReuseTextFields> {
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
               contentPadding:
-                  const EdgeInsets.only(bottom: 8, top: 8, left: 10),
+                  const EdgeInsets.only(bottom: 10, top: 10, left: 10),
               helperText: widget.helperText,
               hintTextDirection: TextDirection.ltr,
               labelText: widget.labelText,

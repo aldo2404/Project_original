@@ -26,16 +26,12 @@ class AllJobsService {
         '/v1/jobs/?filter=active&page=$page',
         options: options,
       );
-      print('tok $token');
 
       if (response.statusCode == 200) {
         print('success');
       } else {
         print(response.statusCode);
       }
-      print('reonse${response.data}\n');
-
-      print("print results: ${response.data['results'].toString()}");
 
       return response.data as dynamic;
     } catch (err) {

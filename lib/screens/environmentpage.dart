@@ -23,7 +23,6 @@ class EnvironmentPageState extends State<EnvironmentPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("domains in environment: ${widget.domains}");
     var domains = widget.domains;
 
     for (var d in domains) {
@@ -82,18 +81,20 @@ class EnvironmentPageState extends State<EnvironmentPage> {
                       enableInfiniteScroll: false,
                     ),
                     itemCount: domains.length,
-                    itemBuilder: (context, i, id) {
-                      final isSelected = _selectedIndexs.contains(i);
-                      String baseUrls = domains[i].host!;
+                    itemBuilder: (context, index, id) {
+                      final isSelected = _selectedIndexs.contains(index);
+                      String baseUrls = domains[index].host!;
 
                       return GestureDetector(
                         onTap: () {
                           print('url$id');
                           setState(() {
                             if (isSelected) {
-                              _selectedIndexs.remove(i);
+                              _selectedIndexs.remove(index);
+                              print("remove: $_selectedIndexs");
                             } else {
-                              _selectedIndexs.add(i);
+                              _selectedIndexs.add(index);
+                              print("add : $_selectedIndexs");
                             }
                             //isSelected = !isSelected;
                           });
@@ -124,7 +125,7 @@ class EnvironmentPageState extends State<EnvironmentPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                domains[i].name!,
+                                domains[index].name!,
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   color: Colors.black,

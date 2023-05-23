@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fx_project/screens/chatpage.dart';
+import 'package:fx_project/screens/chatFolder/chatpage.dart';
+
 import 'package:fx_project/screens/dashboardpage.dart';
 import 'package:fx_project/screens/duplicatecamerapage.dart';
 import 'package:fx_project/screens/morepage.dart';
@@ -14,13 +15,13 @@ class BottomNaviBar extends StatefulWidget {
 
 class _BottomNaviBarState extends State<BottomNaviBar> {
   int selectedIndex = 0;
-  static List<Widget> selectedOption = <Widget>[
-    const DashboardPage(),
-    const ChatPage(),
+  static List<Widget> selectedOption = const <Widget>[
+    DashboardPage(),
+    ChatPage(),
     //CameraPage(camera: firstCamera),
-    const DuplicateCameraPage(),
-    const NotificationPage(),
-    const MorePage(),
+    DuplicateCameraPage(),
+    NotificationPage(),
+    MorePage(),
   ];
   void _onItemTapped(int index) {
     setState(() {

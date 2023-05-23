@@ -14,7 +14,7 @@ class _NotificationPageState extends State<NotificationPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 1, 48, 92),
         leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pop(context),
           icon: const Icon(
             Icons.arrow_back,
           ),
